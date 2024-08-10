@@ -5,7 +5,7 @@ echo Enabling Riot Vanguard...
 
 echo Launching 2XKO!
 @start "2XKO" "path to\Riot Games\Riot Client\RiotClientServices.exe" --launch-product=lion --launch-patchline=live >nul 2>&1
-:: The above line is the directory that is contained in the 2XKO shortcut, launching the lion.exe results in many issues.
+:: The above line is the directory that is contained in the 2XKO shortcut, launching the lion.exe directly, results in many issues.
 
 echo Waiting for 2XKO to close...
 
