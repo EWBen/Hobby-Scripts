@@ -2,5 +2,5 @@ A backup repo for Bambu printer profiles as the BambuStudio flatpak appliances a
 
 Current Flatpak version:
 Folder for profiles:
-    -
-    -
+    - ~/.var/app/com.bambulab.BambuStudio/config/BambuStudio/user/3428139817/filament
+    - ~/.var/app/com.bambulab.BambuStudio/config/BambuStudio/user/3428139817/process

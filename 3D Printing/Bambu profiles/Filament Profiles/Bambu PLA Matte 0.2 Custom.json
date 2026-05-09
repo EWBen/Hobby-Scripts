@@ -1,0 +1,25 @@
+{
+    "filament_cost": [
+        "17.99"
+    ],
+    "filament_extruder_variant": [
+        "Direct Drive Standard",
+        "Direct Drive High Flow"
+    ],
+    "filament_settings_id": [
+        "Bambu PLA Matte 0.2 Custom"
+    ],
+    "from": "User",
+    "hot_plate_temp": [
+        "60"
+    ],
+    "hot_plate_temp_initial_layer": [
+        "70"
+    ],
+    "inherits": "Bambu PLA Matte @BBL X1C 0.2 nozzle",
+    "name": "Bambu PLA Matte 0.2 Custom",
+    "textured_plate_temp_initial_layer": [
+        "60"
+    ],
+    "version": "2.5.0.14"
+}
