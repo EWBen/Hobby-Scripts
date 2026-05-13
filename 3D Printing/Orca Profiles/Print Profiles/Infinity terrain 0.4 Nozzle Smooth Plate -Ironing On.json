@@ -1,0 +1,23 @@
+{
+    "from": "User",
+    "inherits": "0.08mm High Quality @BBL X1C",
+    "initial_layer_infill_speed": "25",
+    "initial_layer_print_height": "0.22",
+    "initial_layer_speed": "20",
+    "ironing_flow": "25%",
+    "ironing_type": "top",
+    "name": "Infinity terrain 0.4 Nozzle Smooth Plate -Ironing On",
+    "print_extruder_id": [
+        "1",
+        "1"
+    ],
+    "print_extruder_variant": [
+        "Direct Drive Standard",
+        "Direct Drive High Flow"
+    ],
+    "print_settings_id": "Infinity terrain 0.4 Nozzle Smooth Plate -Ironing On",
+    "skeleton_infill_density": "10%",
+    "skin_infill_density": "10%",
+    "sparse_infill_density": "10%",
+    "version": "2.4.0.10"
+}

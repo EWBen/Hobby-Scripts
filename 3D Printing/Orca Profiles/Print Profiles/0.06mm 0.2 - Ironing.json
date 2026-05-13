@@ -1,0 +1,24 @@
+{
+    "bottom_shell_layers": "2",
+    "from": "User",
+    "inherits": "0.06mm High Quality @BBL X1C 0.2 nozzle",
+    "ironing_flow": "25%",
+    "ironing_speed": "25",
+    "ironing_type": "top",
+    "name": "0.06mm 0.2 - Ironing",
+    "print_extruder_id": [
+        "1",
+        "1"
+    ],
+    "print_extruder_variant": [
+        "Direct Drive Standard",
+        "Direct Drive High Flow"
+    ],
+    "print_settings_id": "0.06mm 0.2 - Ironing",
+    "raft_first_layer_expansion": "6",
+    "support_on_build_plate_only": "1",
+    "top_shell_layers": "4",
+    "tree_support_wall_count": "1",
+    "version": "2.5.0.14",
+    "wall_generator": "arachne"
+}
