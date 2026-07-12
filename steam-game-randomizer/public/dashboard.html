@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Game Randomizer - Dashboard 🎮</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Your personal game randomizer dashboard">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GameRandom">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+    
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container dashboard">
+        <div class="header">
+            <h1>🎮 Game Randomizer</h1>
+            <div class="user-info">
+                <img id="userAvatar" src="" alt="">
+                <span id="userName"></span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="status-bar" id="statusBar"></div>
+
+        <div class="cards-grid">
+            <!-- Games Panel -->
+            <div class="card panel">
+                <div class="card-header">
+                    <h2>Your Game Library</h2>
+                    <span class="badge" id="gameCount">Loading...</span>
+                </div>
+                <textarea id="gameList" placeholder="Fetching games from Steam..." readonly></textarea>
+                <button class="refresh-btn" onclick="refreshGames()">
+                    🔄 Refresh Library
+                </button>
+                <p class="helper-text">Games auto-loaded from your Steam profile</p>
+            </div>
+
+            <!-- Randomize Panel -->
+            <div class="card panel">
+                <div class="card-header">
+                    <h2>Pick Your Next Adventure</h2>
+                </div>
+                <div class="result-box" id="resultBox">
+                    <span class="label">Your Next Game:</span>
+                    <span class="game-name" id="selectedGame">?</span>
+                </div>
+                <button class="random-btn" onclick="randomGame()">
+                    🎲 Random Game
+                </button>
+                <div class="keyboard-hint">Press Alt+Enter to randomize</div>
+            </div>
+        </div>
+
+        <div id="errorArea"></div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
