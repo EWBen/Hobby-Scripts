@@ -193,7 +193,8 @@ function showResult(game) {
         if (labelTextEl) {
             labelTextEl.style.color = '#bd00ff';
             labelTextEl.style.fontFamily = '"Share Tech Mono", monospace';
-            labelTextEl.textContent = ' Positive';
+            labelTextEl.style.marginLeft = '8px';
+            labelTextEl.textContent = 'Positive';
         }
     } else {
         elements.scoreDisplay.style.display = 'none';
