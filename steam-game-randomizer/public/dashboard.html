@@ -40,6 +40,20 @@
                     <h2>Your Game Library</h2>
                     <span class="badge" id="gameCount">Loading...</span>
                 </div>
+                
+                <!-- Review Score Filter -->
+                <div class="filter-section">
+                    <div class="filter-row">
+                        <label class="filter-label">Minimum Positive Score</label>
+                        <span class="filter-value" id="minScoreValue">0%</span>
+                    </div>
+                    <input type="range" id="minScore" class="score-slider" 
+                        min="0" max="100" value="0" step="5">
+                    <div class="filter-row">
+                        <span class="filter-hint" id="eligibleCount">All games eligible</span>
+                    </div>
+                </div>
+                
                 <textarea id="gameList" placeholder="Fetching games from Steam..." readonly></textarea>
                 <button class="refresh-btn" onclick="refreshGames()">
                     🔄 Refresh Library
@@ -55,6 +69,10 @@
                 <div class="result-box" id="resultBox">
                     <span class="label">Your Next Game:</span>
                     <span class="game-name" id="selectedGame">?</span>
+                    <div class="score-display" id="scoreDisplay" style="display: none;">
+                        <span class="score-text" id="scoreValue">85%</span>
+                        <span class="score-label"> Positive</span>
+                    </div>
                     <img id="boxArt" class="box-art" alt="Game Box Art" style="display: none;">
                 </div>
                 <button class="random-btn" onclick="randomGame()">

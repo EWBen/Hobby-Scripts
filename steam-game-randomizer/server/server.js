@@ -1,6 +1,6 @@
 /**
  * Steam Game Randomizer - Backend Server
- * Handles Steam OpenID authentication and API requests
+ * Handles Steam OpenID authentication, game library fetching, and review data
  */
 
 require('dotenv').config();
@@ -27,10 +27,6 @@ if (!process.env.SESSION_SECRET) {
     process.exit(1);
 }
 
-if (!process.env.BASE_URL) {
-    console.warn('⚠️ BASE_URL not set. Defaulting to localhost.');
-}
-
 // Middleware
 app.use(cookieParser());
 app.use(express.json());
@@ -39,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 // Static files
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Serve manifest dynamically (updates base_url)
+// Serve manifest dynamically
 app.get('/manifest.json', (req, res) => {
     res.setHeader('Content-Type', 'application/manifest+json');
     res.json({
@@ -50,33 +46,21 @@ app.get('/manifest.json', (req, res) => {
         scope: "/",
         display: "standalone",
         orientation: "portrait",
-        background_color: "#667eea",
-        theme_color: "#667eea",
+        background_color: "#0a0a0f",
+        theme_color: "#00f5d4",
         categories: ["games", "entertainment", "utilities"],
         icons: [
             {
                 src: "/icons/icon-192.png",
                 sizes: "192x192",
                 type: "image/png",
-                purpose: "any"
+                purpose: "any maskable"
             },
             {
                 src: "/icons/icon-512.png",
                 sizes: "512x512",
                 type: "image/png",
-                purpose: "any"
-            },
-            {
-                src: "/icons/icon-maskable-192.png",
-                sizes: "192x192",
-                type: "image/png",
-                purpose: "maskable"
-            },
-            {
-                src: "/icons/icon-maskable-512.png",
-                sizes: "512x512",
-                type: "image/png",
-                purpose: "maskable"
+                purpose: "any maskable"
             }
         ],
         shortcuts: [
@@ -91,7 +75,7 @@ app.get('/manifest.json', (req, res) => {
     });
 });
 
-// Serve service worker with correct headers
+// Serve service worker
 app.get('/sw.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -114,13 +98,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Passport serialization
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
-});
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((obj, done) => done(null, obj));
 
 // Steam OpenID Strategy
 const base_url = process.env.BASE_URL || `http://localhost:${PORT}`;
@@ -130,42 +109,33 @@ passport.use(new SteamStrategy({
     realm: base_url,
     apiKey: process.env.STEAM_API_KEY
 }, (identifier, profile, done) => {
-    // Extract SteamID64 from identifier URL
     const steamId64 = identifier.match(/\d+$/)[0];
-    
     const user = {
         steamId64: steamId64,
         displayName: profile.displayName,
         avatar: profile.photos?.medium || null
     };
-    
     console.log(`✅ User logged in: ${user.displayName} (${user.steamId64})`);
     done(null, user);
 }));
 
 // Auth routes
-app.get('/auth/steam',
-    (req, res, next) => {
-        console.log('🚪 Initiating Steam auth...');
-        passport.authenticate('steam')(req, res, next);
-    }
-);
+app.get('/auth/steam', (req, res, next) => {
+    passport.authenticate('steam')(req, res, next);
+});
 
 app.get('/auth/steam/return',
     (req, res, next) => {
         passport.authenticate('steam', { failureRedirect: '/' })(req, res, next);
     },
     (req, res) => {
-        console.log('✅ Authentication successful, redirecting to dashboard');
         res.redirect('/dashboard');
     }
 );
 
 app.get('/auth/logout', (req, res) => {
     req.logout((err) => {
-        if (err) {
-            console.error('Logout error:', err);
-        }
+        if (err) console.error('Logout error:', err);
         res.clearCookie('connect.sid');
         res.redirect('/');
     });
@@ -174,15 +144,38 @@ app.get('/auth/logout', (req, res) => {
 // Protected API routes
 app.get('/api/user', (req, res) => {
     if (req.isAuthenticated()) {
-        res.json({
-            authenticated: true,
-            ...req.user
-        });
+        res.json({ authenticated: true, ...req.user });
     } else {
         res.json({ authenticated: false });
     }
 });
 
+// Helper: Fetch review percentage for a single game
+async function fetchReviewPercent(appid) {
+    try {
+        const url = `https://store.steampowered.com/appreviews/${appid}?json=1&num_per_page=0&purchase_type=all`;
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        
+        const data = await response.json();
+        const summary = data.query_summary;
+        
+        if (!summary || summary.total_reviews === 0) {
+            return { review_percent: null, total_reviews: 0, review_desc: 'No reviews' };
+        }
+        
+        const percent = Math.round((summary.total_positive / summary.total_reviews) * 100);
+        return {
+            review_percent: percent,
+            total_reviews: summary.total_reviews,
+            review_desc: summary.review_score_desc
+        };
+    } catch (err) {
+        return null;
+    }
+}
+
+// Games endpoint (lightweight - just name + appid, no review data)
 app.post('/api/games', async (req, res) => {
     if (!req.isAuthenticated()) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -191,31 +184,29 @@ app.post('/api/games', async (req, res) => {
     const steamId = req.user.steamId64;
     
     try {
-        const url = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${process.env.STEAM_API_KEY}&steamid=${steamId}&include_appinfo=1&include_played_free_games=1`;
+        const ownedUrl = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${process.env.STEAM_API_KEY}&steamid=${steamId}&include_appinfo=1&include_played_free_games=1`;
         
-        const response = await fetch(url);
+        const ownedResponse = await fetch(ownedUrl);
+        if (!ownedResponse.ok) throw new Error(`Steam API error: ${ownedResponse.status}`);
         
-        if (!response.ok) {
-            throw new Error(`Steam API error: ${response.status}`);
+        const ownedData = await ownedResponse.json();
+        
+        if (!ownedData.response?.games || ownedData.response.games.length === 0) {
+            return res.json({ success: true, totalGames: 0, games: [] });
         }
 
-        const data = await response.json();
+        const ownedGames = ownedData.response.games.map(app => ({
+            name: app.name,
+            appid: app.appid
+        }));
+
+        console.log(`🎮 Retrieved ${ownedGames.length} games for ${req.user.displayName}`);
         
-// Extract game name + appid for box art
-const games = (data.response?.games || [])
-    .filter(game => game.name)
-    .map(game => ({
-        name: game.name,
-        appid: game.appid
-    }));
-
-console.log(`🎮 Retrieved ${games.length} games for ${req.user.displayName}`);
-
-res.json({
-    success: true,
-    totalGames: games.length,
-    games: games
-});
+        res.json({
+            success: true,
+            totalGames: ownedGames.length,
+            games: ownedGames
+        });
 
     } catch (error) {
         console.error('Error fetching games:', error);
@@ -224,6 +215,13 @@ res.json({
             message: error.message 
         });
     }
+});
+
+// Endpoint to fetch review for a single game on demand
+app.post('/api/game-review/:appid', async (req, res) => {
+    const { appid } = req.params;
+    const reviewData = await fetchReviewPercent(appid);
+    res.json(reviewData || { review_percent: null });
 });
 
 // Dashboard route

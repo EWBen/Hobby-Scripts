@@ -19,7 +19,7 @@
     --glow-color: rgba(0, 245, 212, 0.5);
     --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #120a1a 50%, #0a121a 100%);
     
-    /* Fonts similar to Steam + Cyberpunk */
+    /* Fonts */
     --font-main: 'Rajdhani', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-mono: 'Share Tech Mono', 'Courier New', monospace;
     --font-heading: 'Orbitron', 'Rajdhani', sans-serif;
@@ -348,6 +348,7 @@ textarea[readonly] {
 }
 
 .refresh-btn {
+    width: 100%;
     background: transparent;
     color: var(--text-primary);
     border: 1px solid var(--neon-turquoise);
@@ -656,44 +657,6 @@ textarea[readonly] {
     }
 }
 
-/* Scanline effect for cyberpunk vibe */
-.scanlines {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        rgba(0, 245, 212, 0.03) 1px,
-        transparent 2px
-    );
-    z-index: 9999;
-    opacity: 0.3;
-}
-
-/* Optional: Add to body for retro CRT effect */
-/* Uncomment if you want the scanline effect:
-scanlines: before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        rgba(0, 0, 0, 0.1) 1px,
-        transparent 2px
-    );
-    pointer-events: none;
-    z-index: 9999;
-}
-*/
-
 /* ===== BOX ART ===== */
 .box-art {
     width: 100%;
@@ -711,4 +674,114 @@ scanlines: before {
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== REVIEW SCORE DISPLAY ===== */
+.score-display {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: rgba(189, 0, 255, 0.1);
+    border: 1px solid rgba(189, 0, 255, 0.3);
+    border-radius: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.score-text {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    /* color removed - now set via JS */
+}
+
+.score-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    /* color removed - now set via JS */
+    letter-spacing: 1px;
+}
+
+/* ===== REVIEW SCORE FILTER ===== */
+.filter-section {
+    background: rgba(0, 245, 212, 0.05);
+    border: 1px solid var(--dark-border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-row:last-child {
+    margin-bottom: 0;
+    margin-top: 10px;
+}
+
+.filter-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.filter-value {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--neon-turquoise);
+    text-shadow: 0 0 10px var(--glow-color);
+    font-weight: 700;
+}
+
+.filter-hint {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.score-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #1a1a2e;
+    outline: none;
+    border: 1px solid var(--dark-border);
+    margin: 5px 0;
+}
+
+.score-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--neon-turquoise);
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--glow-color);
+    transition: all 0.2s ease;
+}
+
+.score-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 25px var(--glow-color);
+}
+
+.score-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--neon-turquoise);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 15px var(--glow-color);
 }
