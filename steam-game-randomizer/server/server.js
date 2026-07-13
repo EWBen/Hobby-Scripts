@@ -201,18 +201,21 @@ app.post('/api/games', async (req, res) => {
 
         const data = await response.json();
         
-        // Extract game names from response
-        const games = (data.response?.games || [])
-            .map(game => game.name)
-            .filter(name => name);
+// Extract game name + appid for box art
+const games = (data.response?.games || [])
+    .filter(game => game.name)
+    .map(game => ({
+        name: game.name,
+        appid: game.appid
+    }));
 
-        console.log(`🎮 Retrieved ${games.length} games for ${req.user.displayName}`);
-        
-        res.json({
-            success: true,
-            totalGames: games.length,
-            games: games
-        });
+console.log(`🎮 Retrieved ${games.length} games for ${req.user.displayName}`);
+
+res.json({
+    success: true,
+    totalGames: games.length,
+    games: games
+});
 
     } catch (error) {
         console.error('Error fetching games:', error);
